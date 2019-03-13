@@ -11,6 +11,52 @@ Table::~Table() noexcept {
     delete [] table;
 }
 
+void Table::insert(int index, int value) {
+    if (capacity == 0) {
+        table = new int[1];
+        capacity = 1;
+    } else if (capacity > size) {
+        for (int i = size - 1; i >= index; --i) {
+            table[i + 1] = table[i];
+        }
+    } else if (capacity == size) {
+        auto *tmpTable = new int[ENLARGEMENT_COEFFICIENT * capacity];
+        int i;
+        for (i = 0; i < index; ++i) {
+            tmpTable[i] = table[i];
+        }
+        for (int j = index + 1; i < size; ++i, ++j) {
+            tmpTable[j] = table[i];
+        }
+        delete [] table;
+        table = tmpTable;
+        capacity *= ENLARGEMENT_COEFFICIENT;
+    }
+    table[index] = value;
+    ++size;
+}
+
+void Table::insertAtStart(int value) {
+    if (capacity == 0) {
+        table = new int[1];
+        capacity = 1;
+    } else if (capacity > size) {
+        for (int i = size - 1; i >= 0; --i) {
+            table[i + 1] = table[i];
+        }
+    } else if (capacity == size) {
+        auto *tmpTable = new int[ENLARGEMENT_COEFFICIENT * capacity];
+        for (int i = size - 1; i >= 0; --i) {
+            tmpTable[i + 1] = table[i];
+        }
+        delete [] table;
+        table = tmpTable;
+        capacity *= ENLARGEMENT_COEFFICIENT;
+    }
+    table[0] = value;
+    ++size;
+}
+
 void Table::insertAtEnd(int value) {
     if (capacity == 0) {
         table = new int[1];
@@ -28,8 +74,31 @@ void Table::insertAtEnd(int value) {
     ++size;
 }
 
-int Table::remove(int index) {
-    return 0;
+void Table::remove(int index) {
+    if (size == 1) {
+        delete [] table;
+        table = nullptr;
+        capacity = 0;
+    }
+    else if (getFullFactor() >= REDUCTION_COEFFICIENT) {
+        for (int i = index; i < size - 1; ++i) {
+            table[i] = table[i + 1];
+        }
+    } else {
+        auto *tmpTable = new int [capacity / ENLARGEMENT_COEFFICIENT];
+        int i;
+        for (i = 0; i < index; ++i) {
+            tmpTable[i] = table[i];
+        }
+        ++i;
+        for (int j = index; i < size; ++i, ++j) {
+            tmpTable[j] = table[i];
+        }
+        delete [] table;
+        table = tmpTable;
+        capacity /= ENLARGEMENT_COEFFICIENT;
+    }
+    --size;
 }
 
 int Table::search(int value) const {
@@ -43,6 +112,7 @@ int Table::search(int value) const {
     return index;
 }
 
+
 std::string Table::asString() const {
     std::string strTable;
     strTable.append("[");
@@ -50,7 +120,9 @@ std::string Table::asString() const {
         strTable.append(std::to_string(table[i]));
         strTable.append(", ");
     }
-    strTable.append(std::to_string(table[size - 1]));
+    if (size != 0) {
+        strTable.append(std::to_string(table[size - 1]));
+    }
     strTable.append("]");
     return strTable;
 }
@@ -59,13 +131,16 @@ int Table::getSize() const {
     return size;
 }
 
-
 int Table::getCapacity() const {
     return capacity;
 }
 
 double Table::getFullFactor() const {
-    return 0;
+    if (capacity == 0) {
+        return 1;
+    } else {
+        return static_cast<double>(size)/capacity;
+    }
 }
 
 std::ostream &operator<<(std::ostream &ostr, const Table &table) {

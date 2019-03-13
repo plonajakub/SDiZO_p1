@@ -15,7 +15,8 @@ public:
     ~Table() noexcept;
     void insert(int index, int value);
     void insertAtEnd(int value);
-    int remove(int index);
+    void insertAtStart(int value);
+    void remove(int index);
     int search(int value) const;
     std::string asString() const;
 

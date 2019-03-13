@@ -18,7 +18,10 @@ public:
     void run();
 
 private:
+    void testInsert();
     void testInsertAtEnd();
+    void testInsertAtStart();
+    void testRemove();
     void testSearch();
 };
 
