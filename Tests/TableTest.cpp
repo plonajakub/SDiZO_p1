@@ -9,6 +9,8 @@ void TableTest::run() {
     testInsertAtStart();
     testInsertAtEnd();
     testRemove();
+    testRemoveAtStart();
+    testRemoveAtEnd();
     testSearch();
 }
 
@@ -186,28 +188,36 @@ void TableTest::testRemove() {
     table.insertAtEnd(20);
     table.insertAtEnd(-5);
     table.insertAtEnd(0);
+    table.insertAtEnd(-15);
 
     assert(table.table != nullptr);
-    assert(table.getSize() == 4);
-    assert(table.getCapacity() == 4);
+    assert(table.getSize() == 5);
+    assert(table.getCapacity() == 8);
     assert(table.table[0] == 5);
     cout << table << endl;
 
     table.remove(0);
     assert(table.table != nullptr);
-    assert(table.getSize() == 3);
-    assert(table.getCapacity() == 4);
+    assert(table.getSize() == 4);
+    assert(table.getCapacity() == 8);
     assert(table.table[0] == 20);
     cout << table << endl;
 
     table.remove(1);
     assert(table.table != nullptr);
-    assert(table.getSize() == 2);
-    assert(table.getCapacity() == 4);
+    assert(table.getSize() == 3);
+    assert(table.getCapacity() == 8);
     assert(table.table[1] == 0);
     cout << table << endl;
 
     table.remove(0);
+    assert(table.table != nullptr);
+    assert(table.getSize() == 2);
+    assert(table.getCapacity() == 8);
+    assert(table.table[0] == 0);
+    cout << table << endl;
+
+    table.remove(1);
     assert(table.table != nullptr);
     assert(table.getSize() == 1);
     assert(table.getCapacity() == 4);
@@ -237,4 +247,109 @@ void TableTest::testSearch() {
     assert(table.search(0) == 3);
 
     cout << "*** TableTest::testSearch() end ***" << endl;
+}
+
+void TableTest::testRemoveAtStart() {
+    cout << "*** TableTest::testRemoveAtStart() start ***" << endl;
+
+    Table table;
+    table.insertAtEnd(5);
+    table.insertAtEnd(20);
+    table.insertAtEnd(-5);
+    table.insertAtEnd(0);
+    table.insertAtEnd(-15);
+
+    assert(table.table != nullptr);
+    assert(table.getSize() == 5);
+    assert(table.getCapacity() == 8);
+    assert(table.table[0] == 5);
+    cout << table << endl;
+
+    table.removeAtStart();
+    assert(table.table != nullptr);
+    assert(table.getSize() == 4);
+    assert(table.getCapacity() == 8);
+    assert(table.table[0] == 20);
+    cout << table << endl;
+
+    table.removeAtStart();
+    assert(table.table != nullptr);
+    assert(table.getSize() == 3);
+    assert(table.getCapacity() == 8);
+    assert(table.table[1] == 0);
+    cout << table << endl;
+
+    table.removeAtStart();
+    assert(table.table != nullptr);
+    assert(table.getSize() == 2);
+    assert(table.getCapacity() == 8);
+    assert(table.table[0] == 0);
+    cout << table << endl;
+
+    table.removeAtStart();
+    assert(table.table != nullptr);
+    assert(table.getSize() == 1);
+    assert(table.getCapacity() == 4);
+    assert(table.table[0] == -15);
+    cout << table << endl;
+
+    table.removeAtStart();
+    assert(table.table == nullptr);
+    assert(table.getSize() == 0);
+    assert(table.getCapacity() == 0);
+    cout << table << endl;
+    cout << "*** TableTest::testRemoveAtStart() end ***" << endl;
+}
+
+void TableTest::testRemoveAtEnd() {
+    cout << "*** TableTest::testRemoveAtEnd() start ***" << endl;
+
+    Table table;
+    table.insertAtEnd(5);
+    table.insertAtEnd(20);
+    table.insertAtEnd(-5);
+    table.insertAtEnd(0);
+    table.insertAtEnd(-15);
+
+    assert(table.table != nullptr);
+    assert(table.getSize() == 5);
+    assert(table.getCapacity() == 8);
+    assert(table.table[4] == -15);
+    cout << table << endl;
+
+    table.removeAtEnd();
+    assert(table.table != nullptr);
+    assert(table.getSize() == 4);
+    assert(table.getCapacity() == 8);
+    assert(table.table[3] == 0);
+    cout << table << endl;
+
+    table.removeAtEnd();
+    assert(table.table != nullptr);
+    assert(table.getSize() == 3);
+    assert(table.getCapacity() == 8);
+    assert(table.table[2] == -5);
+    cout << table << endl;
+
+    table.removeAtEnd();
+    assert(table.table != nullptr);
+    assert(table.getSize() == 2);
+    assert(table.getCapacity() == 8);
+    assert(table.table[1] == 20);
+    cout << table << endl;
+
+    table.removeAtEnd();
+    assert(table.table != nullptr);
+    assert(table.getSize() == 1);
+    assert(table.getCapacity() == 4);
+    assert(table.table[0] == 5);
+    cout << table << endl;
+
+    table.removeAtEnd();
+    assert(table.table == nullptr);
+    assert(table.getSize() == 0);
+    assert(table.getCapacity() == 0);
+    cout << table << endl;
+
+    cout << "*** TableTest::testRemoveAtEnd() end ***" << endl;
 }

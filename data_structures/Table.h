@@ -6,6 +6,7 @@
 #define SDIZO_P1_TABLE_H
 
 #include <iostream>
+#include <exception>
 #include "../Tests/TableTest.h"
 
 class Table {
@@ -17,11 +18,13 @@ public:
     void insertAtEnd(int value);
     void insertAtStart(int value);
     void remove(int index);
+    void removeAtStart();
+    void removeAtEnd();
     int search(int value) const;
     std::string asString() const;
 
-    int getCapacity() const;
     int getSize() const;
+    int getCapacity() const;
 
 private:
     const int ENLARGEMENT_COEFFICIENT = 2;

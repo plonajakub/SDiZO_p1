@@ -12,6 +12,9 @@ Table::~Table() noexcept {
 }
 
 void Table::insert(int index, int value) {
+    if (index > size || index < 0) {
+        throw std::out_of_range("Index out of bounds");
+    }
     if (capacity == 0) {
         table = new int[1];
         capacity = 1;
@@ -75,12 +78,15 @@ void Table::insertAtEnd(int value) {
 }
 
 void Table::remove(int index) {
+    if (index >= size || index < 0) {
+        throw std::out_of_range("Index out of bounds");
+    }
     if (size == 1) {
         delete [] table;
         table = nullptr;
         capacity = 0;
     }
-    else if (getFullFactor() >= REDUCTION_COEFFICIENT) {
+    else if (getFullFactor() > REDUCTION_COEFFICIENT) {
         for (int i = index; i < size - 1; ++i) {
             table[i] = table[i + 1];
         }
@@ -101,6 +107,46 @@ void Table::remove(int index) {
     --size;
 }
 
+void Table::removeAtStart() {
+    if (size == 1) {
+        delete [] table;
+        table = nullptr;
+        capacity = 0;
+    }
+    else if (getFullFactor() > REDUCTION_COEFFICIENT) {
+        for (int i = 0; i < size - 1; ++i) {
+            table[i] = table[i + 1];
+        }
+    } else {
+        auto *tmpTable = new int [capacity / ENLARGEMENT_COEFFICIENT];
+        for (int i = 0; i < size - 1; ++i) {
+            tmpTable[i] = table[i + 1];
+        }
+        delete [] table;
+        table = tmpTable;
+        capacity /= ENLARGEMENT_COEFFICIENT;
+    }
+    --size;
+}
+
+
+void Table::removeAtEnd() {
+    if (size == 1) {
+        delete [] table;
+        table = nullptr;
+        capacity = 0;
+    } else if (getFullFactor() == REDUCTION_COEFFICIENT) {
+        auto *tmpTable = new int [capacity / ENLARGEMENT_COEFFICIENT];
+        for (int i = 0; i < size - 1; ++i) {
+            tmpTable[i] = table[i];
+        }
+        delete [] table;
+        table = tmpTable;
+        capacity /= ENLARGEMENT_COEFFICIENT;
+    }
+    --size;
+}
+
 int Table::search(int value) const {
     int index = -1;
     for (int i = 0; i < size; ++i) {
@@ -111,7 +157,6 @@ int Table::search(int value) const {
     }
     return index;
 }
-
 
 std::string Table::asString() const {
     std::string strTable;
@@ -143,7 +188,7 @@ double Table::getFullFactor() const {
     }
 }
 
-std::ostream &operator<<(std::ostream &ostr, const Table &table) {
+std::ostream& operator<<(std::ostream &ostr, const Table &table) {
     ostr << table.asString();
     return ostr;
 }

@@ -22,6 +22,8 @@ private:
     void testInsertAtEnd();
     void testInsertAtStart();
     void testRemove();
+    void testRemoveAtStart();
+    void testRemoveAtEnd();
     void testSearch();
 };
 
