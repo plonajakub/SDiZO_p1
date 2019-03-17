@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <exception>
-#include "../Tests/TableTest.h"
+#include <string>
 
 class Table {
 
