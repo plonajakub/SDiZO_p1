@@ -21,6 +21,7 @@ private:
     void testInsert();
     void testInsertAtEnd();
     void testInsertAtStart();
+    void testInsertAfterValue();
     void testRemove();
     void testRemoveAtStart();
     void testRemoveAtEnd();

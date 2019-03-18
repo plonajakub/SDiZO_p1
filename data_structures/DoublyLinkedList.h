@@ -8,6 +8,7 @@
 #include <climits>
 #include <string>
 #include <iostream>
+#include <exception>
 
 class Node {
 public:

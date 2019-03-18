@@ -10,11 +10,28 @@ DoublyLinkedList::DoublyLinkedList() noexcept {
 }
 
 DoublyLinkedList::~DoublyLinkedList() noexcept {
-
+    auto *it = sentry->next;
+    while (!it->isSentry) {
+        it = it->next;
+        delete it->prev;
+    }
+    delete sentry;
 }
 
 void DoublyLinkedList::insert(int index, int value) {
-
+    if (index < 0 || index > size) {
+        throw std::out_of_range("Index out of bounds");
+    }
+    auto *newNode = new Node(value);
+    auto *it = sentry->next;
+    for (int i = 0; i != index; ++i) {
+        it = it->next;
+    }
+    newNode->prev = it->prev;
+    it->prev->next = newNode;
+    it->prev = newNode;
+    newNode->next = it;
+    ++size;
 }
 
 void DoublyLinkedList::insertAtStart(int value) {
@@ -36,7 +53,18 @@ void DoublyLinkedList::insertAtEnd(int value) {
 }
 
 void DoublyLinkedList::insertAfterValue(int searchValue, int insertValue) {
-
+    for (auto *it = sentry->next; !it->isSentry; it = it->next) {
+        if (it->data == searchValue) {
+            auto *newNode = new Node(insertValue);
+            newNode->next = it->next;
+            it->next->prev = newNode;
+            it->next = newNode;
+            newNode->prev = it;
+            ++size;
+            return;
+        }
+    }
+    this->insertAtStart(insertValue);
 }
 
 void DoublyLinkedList::remove(int index) {
