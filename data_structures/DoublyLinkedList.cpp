@@ -68,19 +68,47 @@ void DoublyLinkedList::insertAfterValue(int searchValue, int insertValue) {
 }
 
 void DoublyLinkedList::remove(int index) {
-
+    if (index < 0 || index >= size) {
+        throw std::out_of_range("Index out of bounds");
+    }
+    Node *it = sentry->next;
+    for (int i = 0; i != index; ++i) {
+        it = it->next;
+    }
+    it->prev->next = it->next;
+    it->next->prev = it->prev;
+    delete it;
+    --size;
 }
 
 void DoublyLinkedList::removeAtStart() {
-
+    if (size == 0) {
+        throw std::out_of_range("List is empty");
+    }
+    auto *head = sentry->next;
+    sentry->next = head->next;
+    head->next->prev = sentry;
+    delete head;
+    --size;
 }
 
 void DoublyLinkedList::removeAtEnd() {
-
+    if (size == 0) {
+        throw std::out_of_range("List is empty");
+    }
+    auto *tail = sentry->prev;
+    sentry->prev = tail->prev;
+    tail->prev->next = sentry;
+    delete tail;
+    --size;
 }
 
 void DoublyLinkedList::removeByValue(int value) {
-
+    try {
+        this->remove(this->search(value));
+    } catch (const std::out_of_range &e) {
+        // No action if value does not exist
+    }
 }
 
 int DoublyLinkedList::search(int value) const {

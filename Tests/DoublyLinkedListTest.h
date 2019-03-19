@@ -25,6 +25,7 @@ private:
     void testRemove();
     void testRemoveAtStart();
     void testRemoveAtEnd();
+    void testRemoveByValue();
     void testSearch();
 };
 
