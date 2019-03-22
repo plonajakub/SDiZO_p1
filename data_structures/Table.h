@@ -23,6 +23,7 @@ public:
     int search(int value) const;
     std::string asString() const;
     int& operator[](int index);
+    int& operator[](int index) const;
 
     int getSize() const;
     int getCapacity() const;

@@ -178,7 +178,14 @@ std::string Table::asString() const {
     return strTable;
 }
 
-int &Table::operator[](int index) {
+int& Table::operator[](int index) {
+    if (index >= size || index < 0) {
+        throw std::out_of_range("Index out of bounds");
+    }
+    return table[index];
+}
+
+int& Table::operator[](int index) const {
     if (index >= size || index < 0) {
         throw std::out_of_range("Index out of bounds");
     }
