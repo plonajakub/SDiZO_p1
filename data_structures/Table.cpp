@@ -108,6 +108,9 @@ void Table::remove(int index) {
 }
 
 void Table::removeAtStart() {
+    if (size < 1) {
+        throw std::out_of_range("Table is empty");
+    }
     if (size == 1) {
         delete [] table;
         table = nullptr;
@@ -131,6 +134,9 @@ void Table::removeAtStart() {
 
 
 void Table::removeAtEnd() {
+    if (size < 1) {
+        throw std::out_of_range("Table is empty");
+    }
     if (size == 1) {
         delete [] table;
         table = nullptr;
@@ -170,6 +176,13 @@ std::string Table::asString() const {
     }
     strTable.append("]");
     return strTable;
+}
+
+int &Table::operator[](int index) {
+    if (index >= size || index < 0) {
+        throw std::out_of_range("Index out of bounds");
+    }
+    return table[index];
 }
 
 int Table::getSize() const {

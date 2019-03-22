@@ -22,6 +22,7 @@ public:
     void removeAtEnd();
     int search(int value) const;
     std::string asString() const;
+    int& operator[](int index);
 
     int getSize() const;
     int getCapacity() const;
