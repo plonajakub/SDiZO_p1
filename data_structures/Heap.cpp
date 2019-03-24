@@ -16,27 +16,50 @@ void Heap::insert(int key) {
 }
 
 void Heap::remove(int key) {
-
+    int rmIdx = search(key);
+    if (rmIdx == -1) {
+        throw std::invalid_argument("Key does not exist");
+    }
+    table[rmIdx] = table[table.getSize() - 1];
+    table.removeAtEnd();
+    heapify(rmIdx);
 }
 
 int Heap::search(int key) const {
-    return 0;
+    int keyIndex = -1;
+    findKey(key, 0, keyIndex);
+    return keyIndex;
 }
 
-void Heap::print(int index, int indent = 0) const {
-    int heapSize = table.getSize();
-    if (index < heapSize) {
-        if(this->left(index) < heapSize) {
-            print(this->left(index), indent + 4);
-        }
-        if(this->right(index) < heapSize) {
-            print(this->right(index), indent + 4);
-        }
-        if (indent != 0) {
-            std::cout << std::setw(indent) << ' ';
-        }
-        std::cout<< table[index] << std::endl;
+void Heap::findKey(int &key, int currIdx, int &keyIndex) const {
+    if (currIdx >= table.getSize() || keyIndex != -1) {
+        return;
     }
+    if (table[currIdx] == key) {
+        keyIndex = currIdx;
+    }
+    else if (table[currIdx] > key) {
+        findKey(key, this->right(currIdx), keyIndex);
+        findKey(key, this->left(currIdx), keyIndex);
+    }
+}
+
+void Heap::print(const std::ostream &ostr, int index = 0, int space = 0) const {
+    const int COUNT = 8;
+
+    if (index >= table.getSize())
+        return;
+
+    space += COUNT;
+
+    print(ostr, this->right(index), space);
+
+    std::cout << std::endl;
+    for (int i = COUNT; i < space; i++)
+        std::cout << " ";
+    std::cout << table[index] << std::endl;
+
+    print(ostr, this->left(index), space);
 }
 
 int Heap::parent(int index) const {
@@ -55,7 +78,7 @@ void Heap::heapify(int index) {
     int l = this->left(index);
     int r = this->right(index);
     int heapSize = table.getSize();
-    int largest = table[index];
+    int largest = index;
     if (l < heapSize && table[l] > table[largest]) {
         largest = l;
     }
@@ -75,6 +98,8 @@ void Heap::swap(int &x, int &y) const {
 }
 
 std::ostream& operator<<(std::ostream &ostr, const Heap &heap) {
-    heap.print(0);
+    ostr << std::string(40, '-') << std::endl;
+    heap.print(ostr);
+    ostr << std::string(40, '#') << std::endl;
     return ostr;
 }

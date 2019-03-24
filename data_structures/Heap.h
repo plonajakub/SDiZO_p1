@@ -15,7 +15,7 @@ public:
     void insert(int key);
     void remove(int key);
     int search(int key) const;
-    void print(int index, int indent) const;
+    void print(const std::ostream &ostr, int index, int indent) const;
 
 private:
     Table table;
@@ -25,6 +25,7 @@ private:
     inline int right(int index) const;
     void heapify(int index);
     void swap(int &x, int &y) const;
+    void findKey(int &key, int currIdx, int &keyIndex) const;
 
     friend class HeapTest;
 };
