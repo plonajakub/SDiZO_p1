@@ -1,28 +1,28 @@
-//
-// Created by Jakub Plona PL on 09.03.2019.
-//
-
 #include "Table.h"
 
 Table::Table() noexcept : size(0), capacity(0), table(nullptr) {
 }
 
 Table::~Table() noexcept {
-    delete [] table;
+    delete[] table;
 }
 
 void Table::insert(int index, int value) {
+    // Check if index is valid
     if (index > size || index < 0) {
         throw std::out_of_range("Index out of bounds");
     }
     if (capacity == 0) {
+        // First elements is being inserted
         table = new int[1];
         capacity = 1;
     } else if (capacity > size) {
+        // Insert element without enlarging table
         for (int i = size - 1; i >= index; --i) {
             table[i + 1] = table[i];
         }
     } else if (capacity == size) {
+        // Table must be enlarged before insertion
         auto *tmpTable = new int[ENLARGEMENT_COEFFICIENT * capacity];
         int i;
         for (i = 0; i < index; ++i) {
@@ -31,7 +31,7 @@ void Table::insert(int index, int value) {
         for (int j = index + 1; i < size; ++i, ++j) {
             tmpTable[j] = table[i];
         }
-        delete [] table;
+        delete[] table;
         table = tmpTable;
         capacity *= ENLARGEMENT_COEFFICIENT;
     }
@@ -41,18 +41,21 @@ void Table::insert(int index, int value) {
 
 void Table::insertAtStart(int value) {
     if (capacity == 0) {
+        // First elements is being inserted
         table = new int[1];
         capacity = 1;
     } else if (capacity > size) {
+        // Insert element without enlarging table
         for (int i = size - 1; i >= 0; --i) {
             table[i + 1] = table[i];
         }
     } else if (capacity == size) {
+        // Table must be enlarged before insertion
         auto *tmpTable = new int[ENLARGEMENT_COEFFICIENT * capacity];
         for (int i = size - 1; i >= 0; --i) {
             tmpTable[i + 1] = table[i];
         }
-        delete [] table;
+        delete[] table;
         table = tmpTable;
         capacity *= ENLARGEMENT_COEFFICIENT;
     }
@@ -62,14 +65,16 @@ void Table::insertAtStart(int value) {
 
 void Table::insertAtEnd(int value) {
     if (capacity == 0) {
+        // First elements is being inserted
         table = new int[1];
         capacity = 1;
     } else if (capacity == size) {
+        // Table must be enlarged before insertion
         auto *tmpTable = new int[ENLARGEMENT_COEFFICIENT * capacity];
         for (int i = 0; i < size; ++i) {
             tmpTable[i] = table[i];
         }
-        delete [] table;
+        delete[] table;
         table = tmpTable;
         capacity *= ENLARGEMENT_COEFFICIENT;
     }
@@ -78,20 +83,23 @@ void Table::insertAtEnd(int value) {
 }
 
 void Table::remove(int index) {
+    // Check if index is valid
     if (index >= size || index < 0) {
         throw std::out_of_range("Index out of bounds");
     }
     if (size == 1) {
-        delete [] table;
+        // Remove last element
+        delete[] table;
         table = nullptr;
         capacity = 0;
-    }
-    else if (getFullFactor() > REDUCTION_COEFFICIENT) {
+    } else if (getFullFactor() > REDUCTION_COEFFICIENT) {
+        // Table doesn't have to be reduced after removal
         for (int i = index; i < size - 1; ++i) {
             table[i] = table[i + 1];
         }
     } else {
-        auto *tmpTable = new int [capacity / ENLARGEMENT_COEFFICIENT];
+        // Table has to be reduced after removal
+        auto *tmpTable = new int[capacity / ENLARGEMENT_COEFFICIENT];
         int i;
         for (i = 0; i < index; ++i) {
             tmpTable[i] = table[i];
@@ -100,32 +108,35 @@ void Table::remove(int index) {
         for (int j = index; i < size; ++i, ++j) {
             tmpTable[j] = table[i];
         }
-        delete [] table;
+        delete[] table;
         table = tmpTable;
         capacity /= ENLARGEMENT_COEFFICIENT;
     }
     --size;
 }
 
-void Table::removeAtStart() {
+void Table::removeFromStart() {
+    // Check if table is not empty
     if (size < 1) {
         throw std::out_of_range("Table is empty");
     }
     if (size == 1) {
-        delete [] table;
+        // Remove last element
+        delete[] table;
         table = nullptr;
         capacity = 0;
-    }
-    else if (getFullFactor() > REDUCTION_COEFFICIENT) {
+    } else if (getFullFactor() > REDUCTION_COEFFICIENT) {
+        // Table doesn't have to be reduced after removal
         for (int i = 0; i < size - 1; ++i) {
             table[i] = table[i + 1];
         }
     } else {
-        auto *tmpTable = new int [capacity / ENLARGEMENT_COEFFICIENT];
+        // Table has to be reduced after removal
+        auto *tmpTable = new int[capacity / ENLARGEMENT_COEFFICIENT];
         for (int i = 0; i < size - 1; ++i) {
             tmpTable[i] = table[i + 1];
         }
-        delete [] table;
+        delete[] table;
         table = tmpTable;
         capacity /= ENLARGEMENT_COEFFICIENT;
     }
@@ -133,20 +144,23 @@ void Table::removeAtStart() {
 }
 
 
-void Table::removeAtEnd() {
+void Table::removeFromEnd() {
+    // Check if table is not empty
     if (size < 1) {
         throw std::out_of_range("Table is empty");
     }
     if (size == 1) {
-        delete [] table;
+        // Remove last element
+        delete[] table;
         table = nullptr;
         capacity = 0;
     } else if (getFullFactor() == REDUCTION_COEFFICIENT) {
-        auto *tmpTable = new int [capacity / ENLARGEMENT_COEFFICIENT];
+        // Table has to be reduced after removal
+        auto *tmpTable = new int[capacity / ENLARGEMENT_COEFFICIENT];
         for (int i = 0; i < size - 1; ++i) {
             tmpTable[i] = table[i];
         }
-        delete [] table;
+        delete[] table;
         table = tmpTable;
         capacity /= ENLARGEMENT_COEFFICIENT;
     }
@@ -154,7 +168,9 @@ void Table::removeAtEnd() {
 }
 
 int Table::search(int value) const {
-    int index = -1;
+    int index = VALUE_NOT_FOUND;
+
+    // Perform linear search on the table
     for (int i = 0; i < size; ++i) {
         if (table[i] == value) {
             index = i;
@@ -178,14 +194,14 @@ std::string Table::asString() const {
     return strTable;
 }
 
-int& Table::operator[](int index) {
+int &Table::operator[](int index) {
     if (index >= size || index < 0) {
         throw std::out_of_range("Index out of bounds");
     }
     return table[index];
 }
 
-int& Table::operator[](int index) const {
+int &Table::operator[](int index) const {
     if (index >= size || index < 0) {
         throw std::out_of_range("Index out of bounds");
     }
@@ -204,11 +220,11 @@ double Table::getFullFactor() const {
     if (capacity == 0) {
         return 1;
     } else {
-        return static_cast<double>(size)/capacity;
+        return static_cast<double>(size) / capacity;
     }
 }
 
-std::ostream& operator<<(std::ostream &ostr, const Table &table) {
+std::ostream &operator<<(std::ostream &ostr, const Table &table) {
     ostr << table.asString();
     return ostr;
 }

@@ -22,7 +22,7 @@ void Heap::remove(int key) {
 
     // Move last value in heap into the removed key's place
     table[rmIdx] = table[table.getSize() - 1];
-    table.removeAtEnd();
+    table.removeFromEnd();
 
     // Decide which algorithm to use in order to restore heap's order
     if (rmIdx > 0 && rmIdx != table.getSize() && table[rmIdx] > table[parent(rmIdx)]) {
