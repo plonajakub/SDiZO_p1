@@ -1,12 +1,14 @@
-#include "Tests/TableTest.h"
-#include "Tests/DoublyLinkedListTest.h"
-#include "Tests/HeapTest.h"
+#include "tests/TableTest.h"
+#include "tests/DoublyLinkedListTest.h"
+#include "tests/HeapTest.h"
 
 int main() {
-    TableTest tabTests;
-    tabTests.run();
+    TableTest tabTest;
+    tabTest.run();
+
     DoublyLinkedListTest dllTest;
     dllTest.run();
+
     HeapTest heapTest;
     heapTest.run();
     return 0;

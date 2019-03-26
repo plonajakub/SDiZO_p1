@@ -1,16 +1,14 @@
-//
-// Created by Jakub Plona PL on 10.03.2019.
-//
-
 #ifndef SDIZO_P1_TABLETEST_H
 #define SDIZO_P1_TABLETEST_H
 
 #include <iostream>
 #include <cassert>
+
 #include "../data_structures/Table.h"
 
 using std::cout;
 using std::endl;
+
 
 class TableTest {
 
@@ -19,11 +17,17 @@ public:
 
 private:
     void testInsert();
+
     void testInsertAtEnd();
+
     void testInsertAtStart();
+
     void testRemove();
+
     void testRemoveAtStart();
+
     void testRemoveAtEnd();
+
     void testSearch();
 };
 

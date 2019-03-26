@@ -1,8 +1,5 @@
-//
-// Created by Jakub Plona PL on 17.03.2019.
-//
-
 #include "DoublyLinkedListTest.h"
+
 
 void DoublyLinkedListTest::run() {
     testInsert();
@@ -295,7 +292,7 @@ void DoublyLinkedListTest::testRemoveByValue() {
     dll.insertAtEnd(12);
     dll.insertAtEnd(5);
     dll.insertAtEnd(0);
-    assert(dll.size ==6);
+    assert(dll.size == 6);
     cout << dll << endl;
 
     dll.removeByValue(5);

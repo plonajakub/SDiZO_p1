@@ -1,8 +1,5 @@
-//
-// Created by Jakub Plona PL on 10.03.2019.
-//
-
 #include "TableTest.h"
+
 
 void TableTest::run() {
     testInsert();

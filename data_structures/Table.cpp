@@ -1,5 +1,6 @@
 #include "Table.h"
 
+
 Table::Table() noexcept : size(0), capacity(0), table(nullptr) {
 }
 

@@ -1,8 +1,5 @@
-//
-// Created by Jakub Plona PL on 22.03.2019.
-//
-
 #include "HeapTest.h"
+
 
 void HeapTest::run() {
     insertTest();
