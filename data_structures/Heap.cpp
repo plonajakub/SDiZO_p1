@@ -17,22 +17,32 @@ void Heap::insert(int key) {
 
 void Heap::remove(int key) {
     int rmIdx = search(key);
-    if (rmIdx == -1) {
+    if (rmIdx == KEY_NOT_FOUND) {
         throw std::invalid_argument("Key does not exist");
     }
     table[rmIdx] = table[table.getSize() - 1];
     table.removeAtEnd();
-    heapify(rmIdx);
+    if (rmIdx > 0 && rmIdx != table.getSize() && table[rmIdx] > table[parent(rmIdx)]) {
+        int movedValueIdx = rmIdx;
+        while (movedValueIdx > 0 && table[parent(movedValueIdx)] < table[movedValueIdx]) {
+            swap(table[movedValueIdx], table[parent(movedValueIdx)]);
+            movedValueIdx = parent(movedValueIdx);
+        }
+    }
+    else {
+        heapify(rmIdx);
+    }
+
 }
 
 int Heap::search(int key) const {
-    int keyIndex = -1;
+    int keyIndex = KEY_NOT_FOUND;
     findKey(key, 0, keyIndex);
     return keyIndex;
 }
 
 void Heap::findKey(int &key, int currIdx, int &keyIndex) const {
-    if (currIdx >= table.getSize() || keyIndex != -1) {
+    if (currIdx >= table.getSize() || keyIndex != KEY_NOT_FOUND) {
         return;
     }
     if (table[currIdx] == key) {

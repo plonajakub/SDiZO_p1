@@ -18,6 +18,8 @@ public:
     void print(const std::ostream &ostr, int index, int indent) const;
 
 private:
+    static const int KEY_NOT_FOUND = -1;
+
     Table table;
 
     inline int parent(int index) const;

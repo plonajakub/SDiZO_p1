@@ -47,36 +47,62 @@ void HeapTest::insertTest() {
 void HeapTest::removeTest() {
     cout << "*** HeapTest::removeTest() start ***" << endl;
 
-    Heap heap;
-    heap.insert(0);
-    heap.insert(1);
-    heap.insert(2);
-    heap.insert(3);
-    heap.insert(4);
-    heap.insert(5);
-    heap.insert(6);
-    heap.insert(7);
-    cout << heap << endl;
+    auto *heap = new Heap;
+    heap->insert(0);
+    heap->insert(1);
+    heap->insert(2);
+    heap->insert(3);
+    heap->insert(4);
+    heap->insert(5);
+    heap->insert(6);
+    heap->insert(7);
+    cout << "Heap No. 1" << endl;
+    cout << *heap << endl;
 
-    heap.remove(0);
-    cout << heap << endl;
-    assert(heap.table.getSize() == 7);
+    heap->remove(0);
+    cout << *heap << endl;
+    assert(heap->table.getSize() == 7);
 
-    heap.remove(7);
-    cout << heap << endl;
-    assert(heap.table.getSize() == 6);
-    assert(heap.table[0] == 6);
-    assert(heap.table[1] == 4);
+    heap->remove(7);
+    cout << *heap << endl;
+    assert(heap->table.getSize() == 6);
+    assert(heap->table[0] == 6);
+    assert(heap->table[1] == 4);
 
-    heap.remove(4);
-    cout << heap << endl;
-    assert(heap.table.getSize() == 5);
-    assert(heap.table[0] == 6);
-    assert(heap.table[1] == 3);
-    assert(heap.table[2] == 5);
-    assert(heap.table[3] == 1);
-    assert(heap.table[4] == 2);
+    heap->remove(4);
+    cout << *heap << endl;
+    assert(heap->table.getSize() == 5);
+    assert(heap->table[0] == 6);
+    assert(heap->table[1] == 3);
+    assert(heap->table[2] == 5);
+    assert(heap->table[3] == 1);
+    assert(heap->table[4] == 2);
 
+    delete heap;
+
+    heap = new Heap;
+    heap->insert(100);
+    heap->insert(70);
+    heap->insert(90);
+    heap->insert(20);
+    heap->insert(19);
+    heap->insert(89);
+    heap->insert(88);
+    heap->insert(16);
+    heap->insert(15);
+    heap->insert(14);
+    heap->insert(13);
+    heap->insert(79);
+    heap->insert(78);
+    heap->insert(76);
+    heap->insert(75);
+    cout << "Heap No. 2" << endl;
+    cout << *heap << endl;
+
+    heap->remove(20);
+    assert(heap->table.getSize() == 14);
+    assert(heap->table[1] == 75);
+    cout << *heap << endl;
     cout << "*** HeapTest::removeTest() end ***" << endl;
 }
 
