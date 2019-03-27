@@ -44,17 +44,11 @@ public:
     // nullptr is returned if the key does not exist
     RBTNode *search(int searchedKey) const;
 
-    // Left rotation of tree branch relative to relNode
-    void rotateLeft(RBTNode *relNode);
-
-    // Right rotation of tree branch relative to relNode
-    void rotateRight(RBTNode *relNode);
-
     // Inserts into tree new node with key of value: key
     void insert(int key);
 
-    // Removes node from tree pointed by rmNode
-    void remove(RBTNode *rmNode);
+    // Removes key from tree
+    void removeKey(int key);
 
 private:
     // Sentry node
@@ -63,7 +57,11 @@ private:
     // Root of the tree
     RBTNode *root;
 
-    std::string cr, cl, cp;
+    // Extended, combined ASCII symbols
+    std::string rightRamification, leftRamification, verticalPipe;
+
+    // Removes node from tree pointed by rmNode
+    void remove(RBTNode *rmNode);
 
     // Recursive algorithm clearing up nodes starting from currNode
     void recursiveTreeRemoval(RBTNode *currNode);
@@ -75,10 +73,22 @@ private:
     // nullptr is returned if node has no successor
     RBTNode *successor(RBTNode *currNode);
 
+    // Left rotation of tree branch relative to relNode
+    void rotateLeft(RBTNode *relNode);
+
+    // Right rotation of tree branch relative to relNode
+    void rotateRight(RBTNode *relNode);
+
     // Prints red-black tree
-    void printTree(std::string sp, std::string sn, RBTNode *currNode, std::ostream &ostr) const;
+    void printTree(std::ostream &ostr, RBTNode *startNode, int space = 0) const;
+
+    // Prints red-black tree
+    void printTree(std::string currPipes, std::string currRamification, RBTNode *currNode, std::ostream &ostr) const;
 
     friend std::ostream &operator<<(std::ostream &ostr, const RedBlackTree &rbt);
+
+    // For test purposes
+    friend class RedBlackTreeTest;
 };
 
 // Declared for convenient printing

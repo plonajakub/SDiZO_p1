@@ -1,4 +1,3 @@
-
 #include "RedBlackTree.h"
 
 
@@ -6,12 +5,16 @@ RedBlackTree::RedBlackTree() : sentry() {
     // Root points to sentry at the beginning
     root = &sentry;
 
-    cr = cl = cp = "  ";
-    cr[0] = 218;
-    cr[1] = 196;
-    cl[0] = 192;
-    cl[1] = 196;
-    cp[0] = 179;
+    rightRamification = "  ";
+    rightRamification[0] = 218;
+    rightRamification[1] = 196;
+
+    leftRamification = "  ";
+    leftRamification[0] = 192;
+    leftRamification[1] = 196;
+
+    verticalPipe = "  ";
+    verticalPipe[0] = 179;
 }
 
 RedBlackTree::~RedBlackTree() {
@@ -29,31 +32,63 @@ void RedBlackTree::recursiveTreeRemoval(RBTNode *currNode) {
     }
 }
 
-
 std::ostream &operator<<(std::ostream &ostr, const RedBlackTree &rbt) {
+    ostr << std::string(40, '-') << std::endl;
+    //    rbt.printTree(ostr, rbt.root);
     rbt.printTree("", "", rbt.root, ostr);
+    ostr << std::string(40, '#') << std::endl;
     return ostr;
 }
 
+void RedBlackTree::printTree(std::ostream &ostr, RBTNode *startNode, int space) const {
+    // Gap between levels
+    static const int COUNT = 10;
 
-void RedBlackTree::printTree(std::string sp, std::string sn, RBTNode *currNode, std::ostream &ostr) const {
-    std::string t;
+    // Base case
+    if (startNode == &sentry)
+        return;
 
+    // Space for new heap's level
+    space += COUNT;
+
+    // Process right subtree first
+    printTree(ostr, startNode->right, space);
+
+    // Process current node
+    std::cout << std::endl << std::endl << std::endl;
+    for (int i = COUNT; i < space; i++)
+        std::cout << " ";
+    std::cout << startNode->color << ":" << startNode->key << std::endl;
+
+    // Process left subtree
+    printTree(ostr, startNode->left, space);
+}
+
+void RedBlackTree::printTree(std::string currPipes, std::string currRamification, RBTNode *currNode,
+                             std::ostream &ostr) const {
+    std::string pipes;
+
+    // Check if we are still on tree
     if (currNode != &sentry) {
-        t = sp;
-        if (sn == cr) {
-            t[t.length() - 2] = ' ';
+        pipes = currPipes;
+        // If we are going deeper, remove unnecessary pipe
+        if (currRamification == rightRamification) {
+            pipes[pipes.length() - 2] = ' ';
         }
-        printTree(t + cp, cr, currNode->right, ostr);
+        // Process right subtree first
+        printTree(pipes + verticalPipe, rightRamification, currNode->right, ostr);
 
-        t = t.substr(0, sp.length() - 2);
-        ostr << t << sn << currNode->color << ":" << currNode->key << std::endl;
+        // Print current element
+        pipes = pipes.substr(0, currPipes.length() - 2);
+        ostr << pipes << currRamification << currNode->color << ":" << currNode->key << std::endl;
 
-        t = sp;
-        if (sn == cl) {
-            t[t.length() - 2] = ' ';
+        pipes = currPipes;
+        // If we are going deeper, remove unnecessary pipe
+        if (currRamification == leftRamification) {
+            pipes[pipes.length() - 2] = ' ';
         }
-        printTree(t + cp, cl, currNode->left, ostr);
+        // Process left element
+        printTree(pipes + verticalPipe, leftRamification, currNode->left, ostr);
     }
 }
 
@@ -81,7 +116,6 @@ RBTNode *RedBlackTree::min(RBTNode *stRoot) {
         }
     return stRoot;
 }
-
 
 RBTNode *RedBlackTree::successor(RBTNode *currNode) {
     RBTNode *upNode;
@@ -358,4 +392,11 @@ void RedBlackTree::remove(RBTNode *rmNode) {
     node3->color = 'B';
 
     delete node2;
+}
+
+void RedBlackTree::removeKey(int key) {
+    auto *rmNode = this->search(key);
+    if (rmNode != nullptr) {
+        this->remove(rmNode);
+    }
 }
