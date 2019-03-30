@@ -49,9 +49,10 @@ public:
 
     int getCapacity() const;
 
-private:
     // Returned by search() if value was not found
     static const int VALUE_NOT_FOUND = -1;
+
+private:
 
     // Used to determine if the table should be enlarged
     static const int ENLARGEMENT_COEFFICIENT = 2;
