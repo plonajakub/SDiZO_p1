@@ -48,7 +48,7 @@ public:
     void insert(int key);
 
     // Removes key from tree
-    void removeKey(int key);
+    void remove(int key);
 
 private:
     // Sentry node

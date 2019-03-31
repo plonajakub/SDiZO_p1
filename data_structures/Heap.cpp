@@ -132,8 +132,10 @@ void Heap::swap(int &x, int &y) const {
 }
 
 std::ostream &operator<<(std::ostream &ostr, const Heap &heap) {
-    ostr << std::string(40, '-') << std::endl;
+    ostr << std::string(40, '$') << std::endl;
+    ostr << std::string(8, ' ') << "Right side" << std::endl << std::endl;
     heap.print(ostr);
-    ostr << std::string(40, '#') << std::endl;
+    ostr << std::endl << std::string(8, ' ') << "Left side" << std::endl;
+    ostr << std::string(40, '@') << std::endl;
     return ostr;
 }

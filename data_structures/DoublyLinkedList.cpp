@@ -126,11 +126,7 @@ void DoublyLinkedList::removeAtEnd() {
 }
 
 void DoublyLinkedList::removeByValue(int value) {
-    try {
-        this->remove(this->search(value));
-    } catch (const std::out_of_range &e) {
-        // No action if value does not exist
-    }
+    this->remove(this->search(value));
 }
 
 int DoublyLinkedList::search(int value) const {

@@ -1,5 +1,6 @@
 #include "MenuItem.h"
 
+
 MenuItem::MenuItem() : operationType(), operationName(""), nextFreeMenuOption(0) {
 }
 

@@ -23,9 +23,10 @@ public:
     // Draws heap in the console
     void print(const std::ostream &ostr, int index, int indent) const;
 
-private:
     // Index returned by search() if key was not found
     static const int KEY_NOT_FOUND = -1;
+
+private:
 
     // This heap is implemented as a table
     Table table;

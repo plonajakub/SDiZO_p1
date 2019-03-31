@@ -33,10 +33,12 @@ void RedBlackTree::recursiveTreeRemoval(RBTNode *currNode) {
 }
 
 std::ostream &operator<<(std::ostream &ostr, const RedBlackTree &rbt) {
-    ostr << std::string(40, '-') << std::endl;
+    ostr << std::string(40, '$') << std::endl;
+    ostr << std::string(5, ' ') << "Right side" << std::endl << std::endl;
     //    rbt.printTree(ostr, rbt.root);
     rbt.printTree("", "", rbt.root, ostr);
-    ostr << std::string(40, '#') << std::endl;
+    ostr << std::endl << std::string(5, ' ') << "Left side" << std::endl;
+    ostr << std::string(40, '@') << std::endl;
     return ostr;
 }
 
@@ -394,9 +396,11 @@ void RedBlackTree::remove(RBTNode *rmNode) {
     delete node2;
 }
 
-void RedBlackTree::removeKey(int key) {
+void RedBlackTree::remove(int key) {
     auto *rmNode = this->search(key);
     if (rmNode != nullptr) {
         this->remove(rmNode);
+    } else {
+        throw std::invalid_argument("No such key in the tree");
     }
 }

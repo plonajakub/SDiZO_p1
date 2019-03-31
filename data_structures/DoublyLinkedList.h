@@ -67,9 +67,9 @@ public:
     // Makes list's string representation
     std::string asString() const;
 
-private:
     // Returned by search() if value was not found in the list
     static const int VALUE_NOT_FOUND = -1;
+private:
 
     // Sentry's pointer
     Node *sentry;

@@ -107,7 +107,7 @@ void RedBlackTreeTest::removeTest() {
     rbt.insert(16);
     cout << rbt << endl;
 
-    rbt.removeKey(15);
+    rbt.remove(15);
     assert(rbt.root->key == 16);
     assert(rbt.root->color == 'B');
     assert(rbt.root->left->key == -14);
@@ -116,19 +116,19 @@ void RedBlackTreeTest::removeTest() {
     assert(rbt.root->right->color == 'B');
     cout << rbt << endl;
 
-    rbt.removeKey(16);
+    rbt.remove(16);
     assert(rbt.root->key == 27);
     assert(rbt.root->color == 'B');
     assert(rbt.root->left->key == -14);
     assert(rbt.root->left->color == 'R');
     cout << rbt << endl;
 
-    rbt.removeKey(-14);
+    rbt.remove(-14);
     assert(rbt.root->key == 27);
     assert(rbt.root->color == 'B');
     cout << rbt << endl;
 
-    rbt.removeKey(27);
+    rbt.remove(27);
     assert(rbt.root == &(rbt.sentry));
     assert(rbt.root->left == &(rbt.sentry));
     assert(rbt.root->right == &(rbt.sentry));

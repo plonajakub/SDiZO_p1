@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
+#include <limits>
 
 #include "MenuItem.h"
 #include "../data_structures/Table.h"
