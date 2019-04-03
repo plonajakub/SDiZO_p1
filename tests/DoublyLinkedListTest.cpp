@@ -307,12 +307,6 @@ void DoublyLinkedListTest::testRemoveByValue() {
     assert(dll.search(-2) == 0);
     cout << dll << endl;
 
-    dll.removeByValue(0);
-    assert(dll.size == 4);
-    assert(dll.search(5) == 3);
-    assert(dll.search(-2) == 0);
-    cout << dll << endl;
-
     dll.removeByValue(147);
     assert(dll.size == 3);
     assert(dll.search(12) == 1);
@@ -340,7 +334,12 @@ void DoublyLinkedListTest::testRemoveByValue() {
     assert(dll.size == 0);
     cout << dll << endl;
 
-    dll.removeByValue(0);
+    try {
+        dll.removeByValue(0);
+    } catch (const std::out_of_range &e) {
+        cout << "0 not deleted: not in list" << endl;
+    }
+
     assert(dll.sentry->next == dll.sentry);
     assert(dll.sentry->prev == dll.sentry);
     assert(dll.size == 0);
