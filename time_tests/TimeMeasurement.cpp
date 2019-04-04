@@ -4,9 +4,9 @@ TimeMeasurement::TimeMeasurement() : table(nullptr), dll(nullptr), heap(nullptr)
 }
 
 void TimeMeasurement::run() {
-//    analyzeTableInsertBeg();
-//    analyzeTableInsertEnd();
-//    analyzeTableInsertRand();
+    analyzeTableInsertBeg();
+    analyzeTableInsertEnd();
+    analyzeTableInsertRand();
     analyzeTableRemoveBeg();
     analyzeTableRemoveEnd();
     analyzeTableRemoveRand();
@@ -19,19 +19,34 @@ int TimeMeasurement::getRand(int leftLimit, int rightLimit) {
     return std::uniform_int_distribution<>(leftLimit, rightLimit)(gen);
 }
 
-long double TimeMeasurement::countTime(const std::function<void()> &function) {
-    LARGE_INTEGER startingTime, endingTime, elapsedMicroseconds;
-    LARGE_INTEGER frequency;
+int TimeMeasurement::getIntervalValue(int intervalIndex) {
+    switch (intervalIndex) {
+        case 0:
+            return this->getRand(0, INT_MAX / 2);
+        case 1:
+            return this->getRand(INT_MAX / 2, INT_MAX);
+        case 2:
+            return this->getRand(0, INT_MAX);
+        case 3:
+            return this->getRand(0, 100);
+        case 4:
+            return this->getRand(INT_MAX - 100, INT_MAX);
+        default:
+            throw std::exception();
+    }
+}
 
-    QueryPerformanceFrequency(&frequency);
-    startTimer(&startingTime);
+double TimeMeasurement::countTime(const std::function<void()> &function) {
+    LARGE_INTEGER freq;
+    QueryPerformanceFrequency(&freq);
+    double nanoseconds_per_count = 1.0e9 / static_cast<double>(freq.QuadPart);
+
+    LARGE_INTEGER time1, time2;
+    this->startTimer(&time1);
     function();
-    endTimer(&endingTime);
-    elapsedMicroseconds.QuadPart = endingTime.QuadPart - startingTime.QuadPart;
+    this->endTimer(&time2);
 
-    elapsedMicroseconds.QuadPart *= 1000000;
-    elapsedMicroseconds.QuadPart /= frequency.QuadPart;
-    return elapsedMicroseconds.QuadPart;
+    return (time2.QuadPart - time1.QuadPart) * nanoseconds_per_count;
 }
 
 void
@@ -93,188 +108,105 @@ void TimeMeasurement::deleteMeasurementPointTable(MeasurementPoint **mpsTable) {
     delete[] mpsTable;
 }
 
+void TimeMeasurement::divideEachTimeByDrawsNumber(MeasurementPoint **mps) {
+    for (int i = 0; i < DATA_COUNT; ++i) {
+        for (int j = 0; j < INTERVALS_OF_VALUES; ++j) {
+            mps[i][j].time /= DRAWS_NUMBER;
+        }
+    }
+}
+
+void TimeMeasurement::reverseMPS(MeasurementPoint **mps) {
+    MeasurementPoint *temp;
+    for (int i = 0, j = DATA_COUNT - 1; i < j; ++i, --j) {
+        temp = mps[i];
+        mps[i] = mps[j];
+        mps[j] = temp;
+    }
+}
+
 void TimeMeasurement::analyzeTableInsertBeg() {
     MeasurementPoint **mpsTableInsertBeg = createMeasurementPointTable();
+    int value;
     for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
         cout << "mpsTableInsertBeg: draw No. " + std::to_string(draw) + "...";
         for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
             table = new Table;
             for (int i = 0; i < DATA_COUNT; ++i) {
                 mpsTableInsertBeg[i][intervalIdx].size = table->getSize();
-                switch (intervalIdx) {
-                    case 0:
-                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtStart(this->getRand(0, INT_MAX / 2)); });
-                        break;
-                    case 1:
-                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtStart(this->getRand(INT_MAX / 2, INT_MAX)); });
-                        break;
-                    case 2:
-                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtStart(this->getRand(0, INT_MAX)); });
-                        break;
-                    case 3:
-                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtStart(this->getRand(0, 100)); });
-                        break;
-                    case 4:
-                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtStart(this->getRand(INT_MAX - 100, INT_MAX)); });
-                        break;
-                    default:
-                        throw std::exception();
-                }
+                value = this->getIntervalValue(intervalIdx);
+                mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
+                        [&]() -> void { table->insertAtStart(value); });
             }
             delete table;
             table = nullptr;
         }
         cout << "saved!" << endl;
     }
-    for (int i = 0; i < DATA_COUNT; ++i) {
-        for (int j = 0; j < INTERVALS_OF_VALUES; ++j) {
-            mpsTableInsertBeg[i][j].time /= DRAWS_NUMBER;
-        }
-    }
+    this->divideEachTimeByDrawsNumber(mpsTableInsertBeg);
     this->saveTimeDataToFile("table/mpsTableInsertBeg.csv", intervals, mpsTableInsertBeg);
-    deleteMeasurementPointTable(mpsTableInsertBeg);
+    this->deleteMeasurementPointTable(mpsTableInsertBeg);
 }
 
 void TimeMeasurement::analyzeTableInsertEnd() {
     MeasurementPoint **mpsTableInsertEnd = createMeasurementPointTable();
+    int value;
     for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
         cout << "mpsTableInsertEnd: draw No. " + std::to_string(draw) + "...";
         for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
             table = new Table;
             for (int i = 0; i < DATA_COUNT; ++i) {
                 mpsTableInsertEnd[i][intervalIdx].size = table->getSize();
-                switch (intervalIdx) {
-                    case 0:
-                        mpsTableInsertEnd[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtEnd(this->getRand(0, INT_MAX / 2)); });
-                        break;
-                    case 1:
-                        mpsTableInsertEnd[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtEnd(this->getRand(INT_MAX / 2, INT_MAX)); });
-                        break;
-                    case 2:
-                        mpsTableInsertEnd[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtEnd(this->getRand(0, INT_MAX)); });
-                        break;
-                    case 3:
-                        mpsTableInsertEnd[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtEnd(this->getRand(0, 100)); });
-                        break;
-                    case 4:
-                        mpsTableInsertEnd[i][intervalIdx].time += this->countTime(
-                                [&]() -> void { table->insertAtEnd(this->getRand(INT_MAX - 100, INT_MAX)); });
-                        break;
-                    default:
-                        throw std::exception();
-                }
+                value = this->getIntervalValue(intervalIdx);
+                mpsTableInsertEnd[i][intervalIdx].time += this->countTime(
+                        [&]() -> void { table->insertAtEnd(value); });
             }
             delete table;
             table = nullptr;
         }
         cout << "saved!" << endl;
     }
-    for (int i = 0; i < DATA_COUNT; ++i) {
-        for (int j = 0; j < INTERVALS_OF_VALUES; ++j) {
-            mpsTableInsertEnd[i][j].time /= DRAWS_NUMBER;
-        }
-    }
+    this->divideEachTimeByDrawsNumber(mpsTableInsertEnd);
     this->saveTimeDataToFile("table/mpsTableInsertEnd.csv", intervals, mpsTableInsertEnd);
-    deleteMeasurementPointTable(mpsTableInsertEnd);
+    this->deleteMeasurementPointTable(mpsTableInsertEnd);
 }
 
 void TimeMeasurement::analyzeTableInsertRand() {
     MeasurementPoint **mpsTableInsertRand = createMeasurementPointTable();
+    int tabIndex, value;
     for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
         cout << "mpsTableInsertRand: draw No. " + std::to_string(draw) + "...";
         for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
             table = new Table;
             for (int i = 0; i < DATA_COUNT; ++i) {
                 mpsTableInsertRand[i][intervalIdx].size = table->getSize();
-                switch (intervalIdx) {
-                    case 0:
-                        mpsTableInsertRand[i][intervalIdx].time += this->countTime(
-                                [&]() -> void {
-                                    table->insert(this->getRand(0, table->getSize()),
-                                                  this->getRand(0, INT_MAX / 2));
-                                });
-                        break;
-                    case 1:
-                        mpsTableInsertRand[i][intervalIdx].time += this->countTime(
-                                [&]() -> void {
-                                    table->insert(this->getRand(0, table->getSize()),
-                                                  this->getRand(INT_MAX / 2, INT_MAX));
-                                });
-                        break;
-                    case 2:
-                        mpsTableInsertRand[i][intervalIdx].time += this->countTime(
-                                [&]() -> void {
-                                    table->insert(this->getRand(0, table->getSize()),
-                                                  this->getRand(0, INT_MAX));
-                                });
-                        break;
-                    case 3:
-                        mpsTableInsertRand[i][intervalIdx].time += this->countTime(
-                                [&]() -> void {
-                                    table->insert(this->getRand(0, table->getSize()),
-                                                  this->getRand(0, 100));
-                                });
-                        break;
-                    case 4:
-                        mpsTableInsertRand[i][intervalIdx].time += this->countTime(
-                                [&]() -> void {
-                                    table->insert(this->getRand(0, table->getSize()),
-                                                  this->getRand(INT_MAX - 100, INT_MAX));
-                                });
-                        break;
-                    default:
-                        throw std::exception();
-                }
+                tabIndex = this->getRand(0, table->getSize());
+                value = this->getIntervalValue(intervalIdx);
+                mpsTableInsertRand[i][intervalIdx].time += this->countTime(
+                        [&]() -> void {
+                            table->insert(tabIndex, value);
+                        });
             }
             delete table;
             table = nullptr;
         }
         cout << "saved!" << endl;
     }
-    for (int i = 0; i < DATA_COUNT; ++i) {
-        for (int j = 0; j < INTERVALS_OF_VALUES; ++j) {
-            mpsTableInsertRand[i][j].time /= DRAWS_NUMBER;
-        }
-    }
+    this->divideEachTimeByDrawsNumber(mpsTableInsertRand);
     this->saveTimeDataToFile("table/mpsTableInsertRand.csv", intervals, mpsTableInsertRand);
-    deleteMeasurementPointTable(mpsTableInsertRand);
+    this->deleteMeasurementPointTable(mpsTableInsertRand);
 }
 
 void TimeMeasurement::analyzeTableRemoveBeg() {
     MeasurementPoint **mpsTableRemoveBeg = createMeasurementPointTable();
+    int value;
     for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
         cout << "mpsTableRemoveBeg: draw No. " + std::to_string(draw) + "...";
         for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
             table = new Table;
             for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
-                switch (intervalIdx) {
-                    case 0:
-                        table->insertAtEnd(this->getRand(0, INT_MAX / 2));
-                        break;
-                    case 1:
-                        table->insertAtEnd(this->getRand(INT_MAX / 2, INT_MAX));
-                        break;
-                    case 2:
-                        table->insertAtEnd(this->getRand(0, INT_MAX));
-                        break;
-                    case 3:
-                        table->insertAtEnd(this->getRand(0, 100));
-                        break;
-                    case 4:
-                        table->insertAtEnd(this->getRand(INT_MAX - 100, INT_MAX));
-                        break;
-                    default:
-                        throw std::exception();
-                }
+                value = this->getIntervalValue(intervalIdx);
+                table->insertAtEnd(value);
             }
             for (int i = 0; i < DATA_COUNT; ++i) {
                 mpsTableRemoveBeg[i][intervalIdx].size = table->getSize();
@@ -287,28 +219,123 @@ void TimeMeasurement::analyzeTableRemoveBeg() {
         }
         cout << "saved!" << endl;
     }
-    for (int i = 0; i < DATA_COUNT; ++i) {
-        for (int j = 0; j < INTERVALS_OF_VALUES; ++j) {
-            mpsTableRemoveBeg[i][j].time /= DRAWS_NUMBER;
-        }
-    }
-    auto **mpsTableRemoveBegReversed = new MeasurementPoint *[DATA_COUNT]();
-    for (int i = 0, j = DATA_COUNT - 1; i < DATA_COUNT; ++i, --j) {
-        mpsTableRemoveBegReversed[i] = mpsTableRemoveBeg[j];
-    }
-    this->saveTimeDataToFile("table/mpsTableRemoveBeg.csv", intervals, mpsTableRemoveBegReversed);
-    deleteMeasurementPointTable(mpsTableRemoveBeg);
-    delete[] mpsTableRemoveBegReversed;
+    this->divideEachTimeByDrawsNumber(mpsTableRemoveBeg);
+    this->reverseMPS(mpsTableRemoveBeg);
+    this->saveTimeDataToFile("table/mpsTableRemoveBeg.csv", intervals, mpsTableRemoveBeg);
+    this->deleteMeasurementPointTable(mpsTableRemoveBeg);
 }
 
 void TimeMeasurement::analyzeTableRemoveEnd() {
-
+    MeasurementPoint **mpsTableRemoveEnd = createMeasurementPointTable();
+    int value;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsTableRemoveEnd: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            table = new Table;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                value = this->getIntervalValue(intervalIdx);
+                table->insertAtEnd(value);
+            }
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsTableRemoveEnd[i][intervalIdx].size = table->getSize();
+                mpsTableRemoveEnd[i][intervalIdx].time += this->countTime([&]() -> void {
+                    table->removeFromEnd();
+                });
+            }
+            delete table;
+            table = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsTableRemoveEnd);
+    this->reverseMPS(mpsTableRemoveEnd);
+    this->saveTimeDataToFile("table/mpsTableRemoveEnd.csv", intervals, mpsTableRemoveEnd);
+    this->deleteMeasurementPointTable(mpsTableRemoveEnd);
 }
 
 void TimeMeasurement::analyzeTableRemoveRand() {
-
+    MeasurementPoint **mpsTableRemoveRand = createMeasurementPointTable();
+    int tabIndex, value;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsTableRemoveRand: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            table = new Table;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                value = this->getIntervalValue(intervalIdx);
+                table->insertAtEnd(value);
+            }
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsTableRemoveRand[i][intervalIdx].size = table->getSize();
+                tabIndex = this->getRand(0, table->getSize() - 1);
+                mpsTableRemoveRand[i][intervalIdx].time += this->countTime([&]() -> void {
+                    table->remove(tabIndex);
+                });
+            }
+            delete table;
+            table = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsTableRemoveRand);
+    this->reverseMPS(mpsTableRemoveRand);
+    this->saveTimeDataToFile("table/mpsTableRemoveRand.csv", intervals, mpsTableRemoveRand);
+    this->deleteMeasurementPointTable(mpsTableRemoveRand);
 }
 
 void TimeMeasurement::analyzeTableSearch() {
+    MeasurementPoint **mpsTableSearch = createMeasurementPointTable();
+    int insertValue, searchValue;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsTableSearch: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            table = new Table;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                mpsTableSearch[elIdx][intervalIdx].size = table->getSize();
+                insertValue = this->getIntervalValue(intervalIdx);
+                searchValue = this->getIntervalValue(intervalIdx);
+                mpsTableSearch[elIdx][intervalIdx].time += this->countTime([&]() -> void {
+                    table->search(searchValue);
+                });
+                table->insertAtEnd(insertValue);
+            }
+            delete table;
+            table = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsTableSearch);
+    this->saveTimeDataToFile("table/mpsTableSearch.csv", intervals, mpsTableSearch);
+    this->deleteMeasurementPointTable(mpsTableSearch);
+}
+
+void TimeMeasurement::analyzeListInsertBeg() {
 
 }
+
+void TimeMeasurement::analyzeListInsertEnd() {
+
+}
+
+void TimeMeasurement::analyzeListInsertRand() {
+
+}
+
+void TimeMeasurement::analyzeListRemoveBeg() {
+
+}
+
+void TimeMeasurement::analyzeListRemoveEnd() {
+
+}
+
+void TimeMeasurement::analyzeListRemoveRand() {
+
+}
+
+void TimeMeasurement::analyzeListSearch() {
+
+}
+
+
+
+

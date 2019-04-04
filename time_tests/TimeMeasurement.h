@@ -22,7 +22,7 @@ public:
     // Size of structure
     int size;
     // Time of structure's operation
-    long double time;
+    double time;
 };
 
 class TimeMeasurement {
@@ -37,7 +37,7 @@ public:
 private:
 
     // Number of repeated operations of the same type with the same size
-    static const int DRAWS_NUMBER = 4;
+    static const int DRAWS_NUMBER = 5;
 
     // Investigated intervals of data in structures
     static const int INTERVALS_OF_VALUES = 5;
@@ -66,20 +66,30 @@ private:
     // Returns random value from [leftLimit, rightLimit] interval
     int getRand(int leftLimit, int rightLimit);
 
+    // Returns random value for proper interval
+    int getIntervalValue(int intervalIndex);
+
+    // Used to normalize accumulated times from different data draws
+    void divideEachTimeByDrawsNumber(MeasurementPoint **mps);
+
+    // Reverses order of measure points
+    void reverseMPS(MeasurementPoint **mps);
+
     // Start time stamp (saved in *start)
     void startTimer(LARGE_INTEGER *start);
 
     // End time stamp (saved in *stop)
     void endTimer(LARGE_INTEGER *stop);
 
-    // Calculate time of an operation (here function) in microseconds
-    long double countTime(const std::function<void()> &function);
+    // Calculate time of an operation (here function) in nanoseconds
+    double countTime(const std::function<void()> &function);
 
     // Saves collected data about structure method's time in CSV format
     void saveTimeDataToFile(const std::string &fileName,
                             const std::string (&dataRanges)[INTERVALS_OF_VALUES],
                             MeasurementPoint **measurementPoints);
 
+    // Time analysis of table operations
     void analyzeTableInsertBeg();
 
     void analyzeTableInsertEnd();
@@ -93,6 +103,21 @@ private:
     void analyzeTableRemoveRand();
 
     void analyzeTableSearch();
+
+    // Time analysis of list operations
+    void analyzeListInsertBeg();
+
+    void analyzeListInsertEnd();
+
+    void analyzeListInsertRand();
+
+    void analyzeListRemoveBeg();
+
+    void analyzeListRemoveEnd();
+
+    void analyzeListRemoveRand();
+
+    void analyzeListSearch();
 };
 
 
