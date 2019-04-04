@@ -79,6 +79,20 @@ private:
     void saveTimeDataToFile(const std::string &fileName,
                             const std::string (&dataRanges)[INTERVALS_OF_VALUES],
                             MeasurementPoint **measurementPoints);
+
+    void analyzeTableInsertBeg();
+
+    void analyzeTableInsertEnd();
+
+    void analyzeTableInsertRand();
+
+    void analyzeTableRemoveBeg();
+
+    void analyzeTableRemoveEnd();
+
+    void analyzeTableRemoveRand();
+
+    void analyzeTableSearch();
 };
 
 
