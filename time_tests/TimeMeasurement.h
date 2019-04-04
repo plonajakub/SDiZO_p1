@@ -118,6 +118,14 @@ private:
     void analyzeListRemoveRand();
 
     void analyzeListSearch();
+
+    // Time analysis of heap operations
+    void analyzeHeapInsert();
+
+    void analyzeHeapRemove();
+
+    void analyzeHeapSearch();
+
 };
 
 

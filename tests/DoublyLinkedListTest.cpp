@@ -224,13 +224,13 @@ void DoublyLinkedListTest::testRemoveAtStart() {
     assert(dll.size == 3);
     cout << dll << endl;
 
-    dll.removeAtStart();
+    dll.removeFromStart();
     assert(dll.size == 2);
     assert(dll.search(147) == 1);
     assert(dll.search(-2) == 0);
     cout << dll << endl;
 
-    dll.removeAtStart();
+    dll.removeFromStart();
     assert(dll.sentry->next == dll.sentry->prev);
     assert(!dll.sentry->next->isSentry);
     assert(dll.sentry->next->next->isSentry);
@@ -238,7 +238,7 @@ void DoublyLinkedListTest::testRemoveAtStart() {
     assert(dll.size == 1);
     cout << dll << endl;
 
-    dll.removeAtStart();
+    dll.removeFromStart();
     assert(dll.sentry->next == dll.sentry);
     assert(dll.sentry->prev == dll.sentry);
     assert(dll.size == 0);
@@ -258,13 +258,13 @@ void DoublyLinkedListTest::testRemoveAtEnd() {
     assert(dll.size == 3);
     cout << dll << endl;
 
-    dll.removeAtEnd();
+    dll.removeFromEnd();
     assert(dll.size == 2);
     assert(dll.search(5) == 0);
     assert(dll.search(-2) == 1);
     cout << dll << endl;
 
-    dll.removeAtEnd();
+    dll.removeFromEnd();
     assert(dll.sentry->next == dll.sentry->prev);
     assert(!dll.sentry->next->isSentry);
     assert(dll.sentry->next->next->isSentry);
@@ -272,7 +272,7 @@ void DoublyLinkedListTest::testRemoveAtEnd() {
     assert(dll.size == 1);
     cout << dll << endl;
 
-    dll.removeAtEnd();
+    dll.removeFromEnd();
     assert(dll.sentry->next == dll.sentry);
     assert(dll.sentry->prev == dll.sentry);
     assert(dll.size == 0);

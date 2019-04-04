@@ -4,13 +4,23 @@ TimeMeasurement::TimeMeasurement() : table(nullptr), dll(nullptr), heap(nullptr)
 }
 
 void TimeMeasurement::run() {
-    analyzeTableInsertBeg();
-    analyzeTableInsertEnd();
-    analyzeTableInsertRand();
-    analyzeTableRemoveBeg();
-    analyzeTableRemoveEnd();
-    analyzeTableRemoveRand();
-    analyzeTableSearch();
+//    analyzeTableInsertBeg();
+//    analyzeTableInsertEnd();
+//    analyzeTableInsertRand();
+//    analyzeTableRemoveBeg();
+//    analyzeTableRemoveEnd();
+//    analyzeTableRemoveRand();
+//    analyzeTableSearch();
+//    analyzeListInsertBeg();
+//    analyzeListInsertEnd();
+//    analyzeListInsertRand();
+//    analyzeListRemoveBeg();
+//    analyzeListRemoveEnd();
+//    analyzeListRemoveRand();
+//    analyzeListSearch();
+    analyzeHeapInsert();
+    analyzeHeapRemove();
+    analyzeHeapSearch();
 }
 
 int TimeMeasurement::getRand(int leftLimit, int rightLimit) {
@@ -309,31 +319,268 @@ void TimeMeasurement::analyzeTableSearch() {
 }
 
 void TimeMeasurement::analyzeListInsertBeg() {
-
+    MeasurementPoint **mpsListInsertBeg = createMeasurementPointTable();
+    int value;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsListInsertBeg: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            dll = new DoublyLinkedList;
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsListInsertBeg[i][intervalIdx].size = dll->getSize();
+                value = this->getIntervalValue(intervalIdx);
+                mpsListInsertBeg[i][intervalIdx].time += this->countTime(
+                        [&]() -> void { dll->insertAtStart(value); });
+            }
+            delete dll;
+            dll = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsListInsertBeg);
+    this->saveTimeDataToFile("list/mpsListInsertBeg.csv", intervals, mpsListInsertBeg);
+    this->deleteMeasurementPointTable(mpsListInsertBeg);
 }
 
 void TimeMeasurement::analyzeListInsertEnd() {
-
+    MeasurementPoint **mpsListInsertEnd = createMeasurementPointTable();
+    int value;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsListInsertEnd: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            dll = new DoublyLinkedList;
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsListInsertEnd[i][intervalIdx].size = dll->getSize();
+                value = this->getIntervalValue(intervalIdx);
+                mpsListInsertEnd[i][intervalIdx].time += this->countTime(
+                        [&]() -> void { dll->insertAtEnd(value); });
+            }
+            delete dll;
+            dll = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsListInsertEnd);
+    this->saveTimeDataToFile("list/mpsListInsertEnd.csv", intervals, mpsListInsertEnd);
+    this->deleteMeasurementPointTable(mpsListInsertEnd);
 }
 
 void TimeMeasurement::analyzeListInsertRand() {
-
+    MeasurementPoint **mpsListInsertRand = createMeasurementPointTable();
+    int listIndex, value;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsListInsertRand: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            dll = new DoublyLinkedList;
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsListInsertRand[i][intervalIdx].size = dll->getSize();
+                listIndex = this->getRand(0, dll->getSize());
+                value = this->getIntervalValue(intervalIdx);
+                mpsListInsertRand[i][intervalIdx].time += this->countTime(
+                        [&]() -> void {
+                            dll->insert(listIndex, value);
+                        });
+            }
+            delete dll;
+            dll = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsListInsertRand);
+    this->saveTimeDataToFile("list/mpsListInsertRand.csv", intervals, mpsListInsertRand);
+    this->deleteMeasurementPointTable(mpsListInsertRand);
 }
 
 void TimeMeasurement::analyzeListRemoveBeg() {
-
+    MeasurementPoint **mpsListRemoveBeg = createMeasurementPointTable();
+    int value;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsListRemoveBeg: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            dll = new DoublyLinkedList;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                value = this->getIntervalValue(intervalIdx);
+                dll->insertAtEnd(value);
+            }
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsListRemoveBeg[i][intervalIdx].size = dll->getSize();
+                mpsListRemoveBeg[i][intervalIdx].time += this->countTime([&]() -> void {
+                    dll->removeFromStart();
+                });
+            }
+            delete dll;
+            dll = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsListRemoveBeg);
+    this->reverseMPS(mpsListRemoveBeg);
+    this->saveTimeDataToFile("list/mpsListRemoveBeg.csv", intervals, mpsListRemoveBeg);
+    this->deleteMeasurementPointTable(mpsListRemoveBeg);
 }
 
 void TimeMeasurement::analyzeListRemoveEnd() {
-
+    MeasurementPoint **mpsListRemoveEnd = createMeasurementPointTable();
+    int value;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsListRemoveEnd: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            dll = new DoublyLinkedList;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                value = this->getIntervalValue(intervalIdx);
+                dll->insertAtEnd(value);
+            }
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsListRemoveEnd[i][intervalIdx].size = dll->getSize();
+                mpsListRemoveEnd[i][intervalIdx].time += this->countTime([&]() -> void {
+                    dll->removeFromEnd();
+                });
+            }
+            delete dll;
+            dll = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsListRemoveEnd);
+    this->reverseMPS(mpsListRemoveEnd);
+    this->saveTimeDataToFile("list/mpsListRemoveEnd.csv", intervals, mpsListRemoveEnd);
+    this->deleteMeasurementPointTable(mpsListRemoveEnd);
 }
 
 void TimeMeasurement::analyzeListRemoveRand() {
-
+    MeasurementPoint **mpsListRemoveRand = createMeasurementPointTable();
+    int listIndex, value;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsListRemoveRand: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            dll = new DoublyLinkedList;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                value = this->getIntervalValue(intervalIdx);
+                dll->insertAtEnd(value);
+            }
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsListRemoveRand[i][intervalIdx].size = dll->getSize();
+                listIndex = this->getRand(0, dll->getSize() - 1);
+                mpsListRemoveRand[i][intervalIdx].time += this->countTime([&]() -> void {
+                    dll->remove(listIndex);
+                });
+            }
+            delete dll;
+            dll = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsListRemoveRand);
+    this->reverseMPS(mpsListRemoveRand);
+    this->saveTimeDataToFile("list/mpsListRemoveRand.csv", intervals, mpsListRemoveRand);
+    this->deleteMeasurementPointTable(mpsListRemoveRand);
 }
 
 void TimeMeasurement::analyzeListSearch() {
+    MeasurementPoint **mpsListSearch = createMeasurementPointTable();
+    int insertValue, searchValue;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsListSearch: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            dll = new DoublyLinkedList;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                mpsListSearch[elIdx][intervalIdx].size = dll->getSize();
+                insertValue = this->getIntervalValue(intervalIdx);
+                searchValue = this->getIntervalValue(intervalIdx);
+                mpsListSearch[elIdx][intervalIdx].time += this->countTime([&]() -> void {
+                    dll->search(searchValue);
+                });
+                dll->insertAtEnd(insertValue);
+            }
+            delete dll;
+            dll = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsListSearch);
+    this->saveTimeDataToFile("list/mpsListSearch.csv", intervals, mpsListSearch);
+    this->deleteMeasurementPointTable(mpsListSearch);
+}
 
+void TimeMeasurement::analyzeHeapInsert() {
+    MeasurementPoint **mpsHeapInsert = createMeasurementPointTable();
+    int key;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsHeapInsert: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            heap = new Heap;
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsHeapInsert[i][intervalIdx].size = heap->getSize();
+                key = this->getIntervalValue(intervalIdx);
+                mpsHeapInsert[i][intervalIdx].time += this->countTime(
+                        [&]() -> void { heap->insert(key); });
+            }
+            delete heap;
+            heap = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsHeapInsert);
+    this->saveTimeDataToFile("heap/mpsHeapInsert.csv", intervals, mpsHeapInsert);
+    this->deleteMeasurementPointTable(mpsHeapInsert);
+}
+
+void TimeMeasurement::analyzeHeapRemove() {
+    MeasurementPoint **mpsHeapRemove = createMeasurementPointTable();
+    int key, randKeyIdx;
+    auto *keys = new Table;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsHeapRemove: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            heap = new Heap;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                key = this->getIntervalValue(intervalIdx);
+                keys->insertAtEnd(key);
+                heap->insert(key);
+            }
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsHeapRemove[i][intervalIdx].size = heap->getSize();
+                randKeyIdx = this->getRand(0, heap->getSize() - 1);
+                key = (*keys)[randKeyIdx];
+                keys->remove(randKeyIdx);
+                mpsHeapRemove[i][intervalIdx].time += this->countTime([&]() -> void {
+                    heap->remove(key);
+                });
+            }
+            delete heap;
+            heap = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsHeapRemove);
+    this->reverseMPS(mpsHeapRemove);
+    this->saveTimeDataToFile("heap/mpsHeapRemove.csv", intervals, mpsHeapRemove);
+    this->deleteMeasurementPointTable(mpsHeapRemove);
+}
+
+void TimeMeasurement::analyzeHeapSearch() {
+    MeasurementPoint **mpsHeapSearch = createMeasurementPointTable();
+    int insertValue, searchValue;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsHeapSearch: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            heap = new Heap;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                mpsHeapSearch[elIdx][intervalIdx].size = heap->getSize();
+                insertValue = this->getIntervalValue(intervalIdx);
+                searchValue = this->getIntervalValue(intervalIdx);
+                mpsHeapSearch[elIdx][intervalIdx].time += this->countTime([&]() -> void {
+                    heap->search(searchValue);
+                });
+                heap->insert(insertValue);
+            }
+            delete heap;
+            heap = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsHeapSearch);
+    this->saveTimeDataToFile("heap/mpsHeapSearch.csv", intervals, mpsHeapSearch);
+    this->deleteMeasurementPointTable(mpsHeapSearch);
 }
 
 

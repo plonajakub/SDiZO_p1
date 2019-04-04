@@ -52,10 +52,10 @@ public:
     void remove(int index);
 
     // Removes node from beginning of the list
-    void removeAtStart();
+    void removeFromStart();
 
     // Removes node from end of the list
-    void removeAtEnd();
+    void removeFromEnd();
 
     // Removes node with data equal to value
     void removeByValue(int value);
@@ -63,6 +63,9 @@ public:
     // Performs linear search on the list and returns value's index
     // If value does not exist VALUE_NOT_FOUND is returned
     int search(int value) const;
+
+    // Returns list's size
+    int getSize() const;
 
     // Makes list's string representation
     std::string asString() const;

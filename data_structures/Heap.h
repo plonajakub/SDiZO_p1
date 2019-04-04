@@ -23,6 +23,9 @@ public:
     // Draws heap in the console
     void print(const std::ostream &ostr, int index, int indent) const;
 
+    // Returns number of elements inside the heap
+    int getSize() const;
+
     // Index returned by search() if key was not found
     static const int KEY_NOT_FOUND = -1;
 

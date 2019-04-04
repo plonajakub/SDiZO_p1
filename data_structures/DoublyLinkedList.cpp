@@ -97,7 +97,7 @@ void DoublyLinkedList::remove(int index) {
     --size;
 }
 
-void DoublyLinkedList::removeAtStart() {
+void DoublyLinkedList::removeFromStart() {
     // Check if list is empty
     if (size == 0) {
         throw std::out_of_range("List is empty");
@@ -111,7 +111,7 @@ void DoublyLinkedList::removeAtStart() {
     --size;
 }
 
-void DoublyLinkedList::removeAtEnd() {
+void DoublyLinkedList::removeFromEnd() {
     // Check if list is empty
     if (size == 0) {
         throw std::out_of_range("List is empty");
@@ -160,6 +160,10 @@ std::string DoublyLinkedList::asString() const {
     }
     strDll.append("]");
     return strDll;
+}
+
+int DoublyLinkedList::getSize() const {
+    return size;
 }
 
 std::ostream &operator<<(std::ostream &ostr, const DoublyLinkedList &dll) {

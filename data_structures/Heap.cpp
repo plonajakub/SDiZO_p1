@@ -131,6 +131,10 @@ void Heap::swap(int &x, int &y) const {
     y = temp;
 }
 
+int Heap::getSize() const {
+    return table.getSize();
+}
+
 std::ostream &operator<<(std::ostream &ostr, const Heap &heap) {
     ostr << std::string(40, '$') << std::endl;
     ostr << std::string(8, ' ') << "Right side" << std::endl << std::endl;
