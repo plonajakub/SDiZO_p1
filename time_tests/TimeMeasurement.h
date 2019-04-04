@@ -37,20 +37,20 @@ public:
 private:
 
     // Number of repeated operations of the same type with the same size
-    static const int DRAWS_NUMBER = 10;
+    static const int DRAWS_NUMBER = 4;
 
     // Investigated intervals of data in structures
     static const int INTERVALS_OF_VALUES = 5;
 
     // Upper limit for data count in structures
-    static const int DATA_COUNT = 12000;
+    static const int DATA_COUNT = 5000;
 
     const std::string intervals[INTERVALS_OF_VALUES] = {
-            std::string("[0, INT_MAX / 2]"),
-            std::string("[INT_MAX / 2, INT_MAX]"),
-            std::string("[0, INT_MAX]"),
-            std::string("[0, 100]"),
-            std::string("[INT_MAX - 100, INT_MAX]")
+            std::string("[0; INT_MAX / 2]"),
+            std::string("[INT_MAX / 2; INT_MAX]"),
+            std::string("[0; INT_MAX]"),
+            std::string("[0; 100]"),
+            std::string("[INT_MAX - 100; INT_MAX]")
     };
 
     // Investigated structures
@@ -58,6 +58,10 @@ private:
     DoublyLinkedList *dll;
     Heap *heap;
     RedBlackTree *rbt;
+
+    MeasurementPoint **createMeasurementPointTable();
+
+    void deleteMeasurementPointTable(MeasurementPoint **mpsTable);
 
     // Returns random value from [leftLimit, rightLimit] interval
     int getRand(int leftLimit, int rightLimit);
@@ -74,7 +78,7 @@ private:
     // Saves collected data about structure method's time in CSV format
     void saveTimeDataToFile(const std::string &fileName,
                             const std::string (&dataRanges)[INTERVALS_OF_VALUES],
-                            const MeasurementPoint (&measurementPoints)[DATA_COUNT][INTERVALS_OF_VALUES]);
+                            MeasurementPoint **measurementPoints);
 };
 
 

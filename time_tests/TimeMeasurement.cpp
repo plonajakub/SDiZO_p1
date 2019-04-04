@@ -4,48 +4,50 @@ TimeMeasurement::TimeMeasurement() : table(nullptr), dll(nullptr), heap(nullptr)
 }
 
 void TimeMeasurement::run() {
-    MeasurementPoint mpsTableInsertBeg[DATA_COUNT][INTERVALS_OF_VALUES] = {{}};
+    MeasurementPoint **mpsTableInsertBeg = createMeasurementPointTable();
     for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
         cout << "mpsTableInsertBeg: draw No. " + std::to_string(draw) + "...";
         for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
-            delete table;
             table = new Table;
-            for (auto &intervalsData : mpsTableInsertBeg) {
-                intervalsData[intervalIdx].size = table->getSize();
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsTableInsertBeg[i][intervalIdx].size = table->getSize();
                 switch (intervalIdx) {
                     case 0:
-                        intervalsData[intervalIdx].time += this->countTime(
+                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
                                 [&]() -> void { table->insertAtStart(this->getRand(0, INT_MAX / 2)); });
                         break;
                     case 1:
-                        intervalsData[intervalIdx].time += this->countTime(
+                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
                                 [&]() -> void { table->insertAtStart(this->getRand(INT_MAX / 2, INT_MAX)); });
                         break;
                     case 2:
-                        intervalsData[intervalIdx].time += this->countTime(
+                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
                                 [&]() -> void { table->insertAtStart(this->getRand(0, INT_MAX)); });
                         break;
                     case 3:
-                        intervalsData[intervalIdx].time += this->countTime(
+                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
                                 [&]() -> void { table->insertAtStart(this->getRand(0, 100)); });
                         break;
                     case 4:
-                        intervalsData[intervalIdx].time += this->countTime(
+                        mpsTableInsertBeg[i][intervalIdx].time += this->countTime(
                                 [&]() -> void { table->insertAtStart(this->getRand(INT_MAX - 100, INT_MAX)); });
                         break;
                     default:
                         throw std::exception();
                 }
             }
+            delete table;
+            table = nullptr;
         }
         cout << "saved!" << endl;
     }
-    for (auto &row : mpsTableInsertBeg) {
-        for (auto &el : row) {
-            el.time /= DRAWS_NUMBER;
+    for (int i = 0; i < DATA_COUNT; ++i) {
+        for (int j = 0; j < INTERVALS_OF_VALUES; ++j) {
+            mpsTableInsertBeg[i][j].time /= DRAWS_NUMBER;
         }
     }
-    this->saveTimeDataToFile("mpsTableInsertBeg.csv", intervals, mpsTableInsertBeg);
+    this->saveTimeDataToFile("table/mpsTableInsertBeg.csv", intervals, mpsTableInsertBeg);
+    deleteMeasurementPointTable(mpsTableInsertBeg);
 }
 
 int TimeMeasurement::getRand(int leftLimit, int rightLimit) {
@@ -71,7 +73,7 @@ long double TimeMeasurement::countTime(const std::function<void()> &function) {
 
 void
 TimeMeasurement::saveTimeDataToFile(const std::string &fileName, const std::string (&dataRanges)[INTERVALS_OF_VALUES],
-                                    const MeasurementPoint (&measurementPoints)[DATA_COUNT][INTERVALS_OF_VALUES]) {
+                                    MeasurementPoint **measurementPoints) {
     const char sep = ',';
     std::ofstream file("../time_tests/data/" + fileName, std::ofstream::trunc);
     if (!file.is_open()) {
@@ -85,15 +87,15 @@ TimeMeasurement::saveTimeDataToFile(const std::string &fileName, const std::stri
     }
     file << endl;
 
-    for (const auto &row : measurementPoints) {
-        for (int i = 0; i < INTERVALS_OF_VALUES - 1; ++i) {
-            if (row[i].size != row[i + 1].size) {
+    for (int i = 0; i < DATA_COUNT; ++i) {
+        for (int j = 0; j < INTERVALS_OF_VALUES - 1; ++j) {
+            if (measurementPoints[i][j].size != measurementPoints[i][j + 1].size) {
                 throw std::exception();
             }
         }
-        file << row[0].size;
-        for (const auto &element : row) {
-            file << sep << element.time;
+        file << measurementPoints[i][0].size;
+        for (int j = 0; j < INTERVALS_OF_VALUES; ++j) {
+            file << sep << measurementPoints[i][j].time;
         }
         file << endl;
     }
@@ -111,4 +113,19 @@ void TimeMeasurement::endTimer(LARGE_INTEGER *stop) {
     DWORD_PTR oldMask = SetThreadAffinityMask(GetCurrentThread(), 0);
     QueryPerformanceCounter(stop);
     SetThreadAffinityMask(GetCurrentThread(), oldMask);
+}
+
+MeasurementPoint **TimeMeasurement::createMeasurementPointTable() {
+    auto **mpsTable = new MeasurementPoint *[DATA_COUNT]();
+    for (int i = 0; i < DATA_COUNT; ++i) {
+        mpsTable[i] = new MeasurementPoint[INTERVALS_OF_VALUES]();
+    }
+    return mpsTable;
+}
+
+void TimeMeasurement::deleteMeasurementPointTable(MeasurementPoint **mpsTable) {
+    for (int i = 0; i < DATA_COUNT; ++i) {
+        delete[] mpsTable[i];
+    }
+    delete[] mpsTable;
 }
