@@ -1,7 +1,7 @@
 #include "RedBlackTree.h"
 
 
-RedBlackTree::RedBlackTree() : sentry() {
+RedBlackTree::RedBlackTree() : sentry(), size(0) {
     // Root points to sentry at the beginning
     root = &sentry;
 
@@ -283,6 +283,7 @@ void RedBlackTree::insert(int key) {
     }
     // Paint root to black
     root->color = 'B';
+    ++size;
 }
 
 void RedBlackTree::remove(RBTNode *rmNode) {
@@ -392,8 +393,8 @@ void RedBlackTree::remove(RBTNode *rmNode) {
     }
     // Paint root
     node3->color = 'B';
-
     delete node2;
+    --size;
 }
 
 void RedBlackTree::remove(int key) {
@@ -403,4 +404,8 @@ void RedBlackTree::remove(int key) {
     } else {
         throw std::invalid_argument("No such key in the tree");
     }
+}
+
+int RedBlackTree::getSize() {
+    return size;
 }

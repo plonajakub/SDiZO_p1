@@ -50,6 +50,9 @@ public:
     // Removes key from tree
     void remove(int key);
 
+    // Returns number of elements in the tree
+    int getSize();
+
 private:
     // Sentry node
     RBTNode sentry;
@@ -57,6 +60,9 @@ private:
     // Root of the tree
     RBTNode *root;
 
+    // Number of elements in the tree
+    int size;
+    
     // Extended, combined ASCII symbols
     std::string rightRamification, leftRamification, verticalPipe;
 

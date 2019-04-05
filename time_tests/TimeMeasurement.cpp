@@ -4,23 +4,26 @@ TimeMeasurement::TimeMeasurement() : table(nullptr), dll(nullptr), heap(nullptr)
 }
 
 void TimeMeasurement::run() {
-//    analyzeTableInsertBeg();
-//    analyzeTableInsertEnd();
-//    analyzeTableInsertRand();
-//    analyzeTableRemoveBeg();
-//    analyzeTableRemoveEnd();
-//    analyzeTableRemoveRand();
-//    analyzeTableSearch();
-//    analyzeListInsertBeg();
-//    analyzeListInsertEnd();
-//    analyzeListInsertRand();
-//    analyzeListRemoveBeg();
-//    analyzeListRemoveEnd();
-//    analyzeListRemoveRand();
-//    analyzeListSearch();
+    analyzeTableInsertBeg();
+    analyzeTableInsertEnd();
+    analyzeTableInsertRand();
+    analyzeTableRemoveBeg();
+    analyzeTableRemoveEnd();
+    analyzeTableRemoveRand();
+    analyzeTableSearch();
+    analyzeListInsertBeg();
+    analyzeListInsertEnd();
+    analyzeListInsertRand();
+    analyzeListRemoveBeg();
+    analyzeListRemoveEnd();
+    analyzeListRemoveRand();
+    analyzeListSearch();
     analyzeHeapInsert();
     analyzeHeapRemove();
     analyzeHeapSearch();
+    analyzeRBTInsert();
+    analyzeRBTRemove();
+    analyzeRBTSearch();
 }
 
 int TimeMeasurement::getRand(int leftLimit, int rightLimit) {
@@ -583,6 +586,84 @@ void TimeMeasurement::analyzeHeapSearch() {
     this->deleteMeasurementPointTable(mpsHeapSearch);
 }
 
+void TimeMeasurement::analyzeRBTInsert() {
+    MeasurementPoint **mpsRBTInsert = createMeasurementPointTable();
+    int key;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsRBTInsert: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            rbt = new RedBlackTree;
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsRBTInsert[i][intervalIdx].size = rbt->getSize();
+                key = this->getIntervalValue(intervalIdx);
+                mpsRBTInsert[i][intervalIdx].time += this->countTime(
+                        [&]() -> void { rbt->insert(key); });
+            }
+            delete rbt;
+            rbt = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsRBTInsert);
+    this->saveTimeDataToFile("rbt/mpsRBTInsert.csv", intervals, mpsRBTInsert);
+    this->deleteMeasurementPointTable(mpsRBTInsert);
+}
 
+void TimeMeasurement::analyzeRBTRemove() {
+    MeasurementPoint **mpsRBTRemove = createMeasurementPointTable();
+    int key, randKeyIdx;
+    auto *keys = new Table;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsRBTRemove: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            rbt = new RedBlackTree;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                key = this->getIntervalValue(intervalIdx);
+                keys->insertAtEnd(key);
+                rbt->insert(key);
+            }
+            for (int i = 0; i < DATA_COUNT; ++i) {
+                mpsRBTRemove[i][intervalIdx].size = rbt->getSize();
+                randKeyIdx = this->getRand(0, rbt->getSize() - 1);
+                key = (*keys)[randKeyIdx];
+                keys->remove(randKeyIdx);
+                mpsRBTRemove[i][intervalIdx].time += this->countTime([&]() -> void {
+                    rbt->remove(key);
+                });
+            }
+            delete rbt;
+            rbt = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsRBTRemove);
+    this->reverseMPS(mpsRBTRemove);
+    this->saveTimeDataToFile("rbt/mpsRBTRemove.csv", intervals, mpsRBTRemove);
+    this->deleteMeasurementPointTable(mpsRBTRemove);
+}
 
-
+void TimeMeasurement::analyzeRBTSearch() {
+    MeasurementPoint **mpsRBTSearch = createMeasurementPointTable();
+    int insertValue, searchValue;
+    for (int draw = 0; draw < DRAWS_NUMBER; ++draw) {
+        cout << "mpsRBTSearch: draw No. " + std::to_string(draw) + "...";
+        for (int intervalIdx = 0; intervalIdx < INTERVALS_OF_VALUES; ++intervalIdx) {
+            rbt = new RedBlackTree;
+            for (int elIdx = 0; elIdx < DATA_COUNT; ++elIdx) {
+                mpsRBTSearch[elIdx][intervalIdx].size = rbt->getSize();
+                insertValue = this->getIntervalValue(intervalIdx);
+                searchValue = this->getIntervalValue(intervalIdx);
+                mpsRBTSearch[elIdx][intervalIdx].time += this->countTime([&]() -> void {
+                    rbt->search(searchValue);
+                });
+                rbt->insert(insertValue);
+            }
+            delete rbt;
+            rbt = nullptr;
+        }
+        cout << "saved!" << endl;
+    }
+    this->divideEachTimeByDrawsNumber(mpsRBTSearch);
+    this->saveTimeDataToFile("rbt/mpsRBTSearch.csv", intervals, mpsRBTSearch);
+    this->deleteMeasurementPointTable(mpsRBTSearch);
+}
