@@ -19,11 +19,11 @@ int main() {
 //    RedBlackTreeTest rbtTest;
 //    rbtTest.run();
 
-//    ConsoleMenu cm;
-//    cm.start();
+    ConsoleMenu cm;
+    cm.start();
 
-    TimeMeasurement tm;
-    tm.run();
+//    TimeMeasurement tm;
+//    tm.run();
 
     return 0;
 }

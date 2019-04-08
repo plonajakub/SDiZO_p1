@@ -37,13 +37,13 @@ public:
 private:
 
     // Number of repeated operations of the same type with the same size
-    static const int DRAWS_NUMBER = 100;
+    static const int DRAWS_NUMBER = 1;
 
     // Investigated intervals of data in structures
     static const int INTERVALS_OF_VALUES = 5;
 
     // Upper limit for data count in structures
-    static const int DATA_COUNT = 20000;
+    static const int DATA_COUNT = 1000000;
 
     const std::string intervals[INTERVALS_OF_VALUES] = {
             std::string("[0; INT_MAX / 2]"),
